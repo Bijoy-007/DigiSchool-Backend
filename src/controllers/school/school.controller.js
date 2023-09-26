@@ -1,9 +1,13 @@
-import bcrpt from "bcrypt";
-import SchoolModel from "../../models/school.model.js";
+import { validationResult } from "express-validator";
+import SchoolService from "../../services/school.service.js";
 
 class SchoolController {
+  constructor() {
+  }
+
   /**
    * Controller to create a new school
+   * @param {req.body} contains the following properties 
    * @param {username}
    * @param {password}
    * @param {schoolName}
@@ -13,40 +17,32 @@ class SchoolController {
    */
   async createNewSchool(req, res, next) {
     try {
-      console.log(req.body);
-      const payload = req.body;
-
-      const { username, password, schoolName, highestGrade, lowestGrade, email } =
-        payload;
-
-      // * Hashing the pasword
-      const hash = await bcrpt.hash(password, 12);
-
-      // * Creating and saving a new school record
-      const newSchool = new SchoolModel({
-        username,
-        password: hash,
-        schoolName,
-        highestGrade,
-        lowestGrade,
-        email
-      });
-
-      const savedSchool = await newSchool.save();
-
-      console.log("Saved school", savedSchool);
-
-      // * If saved successfully
-      if(savedSchool) {
-        res.status(201).json({
-          status: "success",
-          message: "School created successfully",
-          data: { username, id: savedSchool?._doc?._id, email },
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        /**
+         * If there is any error then throwing error along with details.
+         */
+        throw new Error("Field validation failed!", {
+          cause: { indicator: "validation", status: 400, details: errors },
         });
-      } else
-        throw Error("Something went wrong!");
+      }
+
+      // * Creating a new school with the given payload
+      const savedSchoolDetails = await SchoolService.createNewSchool(
+        req.body
+      );
+
+      res.status(201).json({
+        status: "success",
+        message: "School created successfully",
+        data: {
+          username: savedSchoolDetails?.username,
+          id: savedSchoolDetails?._id,
+          email: savedSchoolDetails?.email,
+        },
+      });
     } catch (error) {
-      console.error(error);
+      next(error);
     }
   }
 }

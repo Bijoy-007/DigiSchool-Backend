@@ -27,6 +27,10 @@ const schoolSchema = new Schema(
       type: Schema.Types.String,
       required: true,
     },
+    isDeleted: {
+      type: Schema.Types.Boolean,
+      default: false
+    }
   },
   {
     timestamps: true,
