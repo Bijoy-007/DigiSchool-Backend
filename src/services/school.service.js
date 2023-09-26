@@ -2,6 +2,7 @@ import bcrpt from "bcrypt";
 
 import SchoolModel from "../models/school.model.js";
 
+
 class SchoolService {
   constructor() {}
   async createNewSchool(payload) {
