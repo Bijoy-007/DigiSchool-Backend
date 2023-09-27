@@ -9,6 +9,9 @@ dotenv.config();
 
 // * Local imports 
 import schoolRoutes from "./src/routes/school.js";
+import getSchoolRoutes from "./src/routes/getSchool.js";
+import deleteSchoolRoutes from "./src/routes/deleteSchool.js";
+import updateSchoolRoutes from "./src/routes/updateSchool.js"
 import globalErrorHandler from "./src/middlewares/globalErrorHandler.js";
 
 // * The express app
@@ -28,6 +31,9 @@ mongoose.connect(process.env.MONGODB_CONNECTION_STRING).then(() => {
 
 // * School routes
 app.use("/school", schoolRoutes);
+app.use("/school", getSchoolRoutes);
+app.use("/school", deleteSchoolRoutes);
+app.use("/school",updateSchoolRoutes);
 
 app.get("/", function (req, res) {
   res.send("Hello World");
