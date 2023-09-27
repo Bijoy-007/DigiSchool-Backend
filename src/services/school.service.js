@@ -113,6 +113,7 @@ class SchoolService {
           const setIsUpdated = await findSchool.save();
 
           resolve(setIsUpdated);
+          
         }
       } catch (error) {
         reject(error);
