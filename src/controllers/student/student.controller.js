@@ -1,22 +1,27 @@
 import { validationResult } from "express-validator";
-import SchoolService from "../../services/school.service.js";
+import StudentService from "../../services/student.service.js";
 
-class SchoolController {
+class StudentController {
   constructor() {}
 
   /**
-   * Controller to create a new school
+   * Controller to create a new student
    * @param {req.body} contains the following properties
-   * @param {username}
-   * @param {password}
-   * @param {schoolName}
-   * @param {highestGrade}
-   * @param {lowestGrade}
-   * @param {email}
+   * @param {name}
+   * @param {parentName}
+   * @param {standard}
+   * @param {section}
+   * @param {roll}
+   * @param {mobileNo}
+   * @param {address}
+   * @param {bloodGroup}
+   * @param {schoolId}
    */
-  async createNewSchool(req, res, next) {
+
+  async createStudent(req, res, next) {
     try {
       const errors = validationResult(req);
+
       if (!errors.isEmpty()) {
         /**
          * If there is any error then throwing error along with details.
@@ -26,50 +31,38 @@ class SchoolController {
         });
       }
 
-      // * Creating a new school with the given payload
-      const savedSchoolDetails = await SchoolService.createNewSchool(req.body);
+      // * If no error found then creating a new student
+      const newStudent = await StudentService.createStudent(req.body);
 
       res.status(201).json({
         status: "success",
-        message: "School created successfully",
-        data: {
-          username: savedSchoolDetails?.username,
-          id: savedSchoolDetails?._id,
-          email: savedSchoolDetails?.email,
-        },
+        message: "Student created successfully",
+        data: newStudent,
       });
     } catch (error) {
       next(error);
     }
   }
 
-  async getSchool(req, res, next) {
+  async getStudents(req, res, next) {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        /**
-         * If there is any error then throwing error along with details.
-         */
-        throw new Error("Field validation failed!", {
-          cause: { indicator: "validation", status: 400, details: errors },
-        });
-      }
-      // * Getting the requested school with the given payload
-      const getSchoolDetails = await SchoolService.getSchool(req.body);
+      // * Storing the available students from DB
+      const foundStudents = await StudentService.getStudents();
 
       res.status(200).json({
         status: "success",
-        message: "One record found",
-        data: getSchoolDetails,
+        message: "Students found",
+        data: foundStudents,
       });
     } catch (error) {
       next(error);
     }
   }
 
-  async updateSchool(req, res, next) {
+  async getStudent(req, res, next) {
     try {
       const errors = validationResult(req);
+
       if (!errors.isEmpty()) {
         /**
          * If there is any error then throwing error along with details.
@@ -79,20 +72,43 @@ class SchoolController {
         });
       }
 
-      const updatedFieldDetails = await SchoolService.updateSchool(
-        req.body
-      );
+      const foundStudent = await StudentService.getStudent(req.body);
+
+      res.status(200).json({
+        status: "success",
+        message: "Student found successfully",
+        data: foundStudent,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateStudent(req, res, next) {
+    try {
+      const errors = validationResult(req);
+
+      if (!errors.isEmpty()) {
+        /**
+         * If there is any error then throwing error along with details.
+         */
+        throw new Error("Field validation failed!", {
+          cause: { indicator: "validation", status: 400, details: errors },
+        });
+      }
+
+      const foundStudent = await StudentService.updateStudent(req.body);
 
       res.status(201).json({
         status: "success",
-        message: "School Updated successfully",
+        message: "Student updated successfully",
         data: {
-          username: updatedFieldDetails?.username,
-          id: updatedFieldDetails?._id,
-          email: updatedFieldDetails?.email,
-          schoolName: updatedFieldDetails?.schoolName,
-          lowestGrade: updatedFieldDetails?.lowestGrade,
-          highestGrade: updatedFieldDetails?.highestGrade,
+          name: foundStudent?.name,
+          standard: foundStudent?.standard,
+          section: foundStudent?.section,
+          roll: foundStudent?.roll,
+          mobileNo: foundStudent?.mobileNo,
+          address: foundStudent?.address,
         },
       });
     } catch (error) {
@@ -100,7 +116,7 @@ class SchoolController {
     }
   }
 
-  async deleteSchool(req, res, next) {
+  async deleteStudent(req, res, next) {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
@@ -111,17 +127,17 @@ class SchoolController {
           cause: { indicator: "validation", status: 400, details: errors },
         });
       } else {
-        const deleteSchoolDetails = await SchoolService.deleteSchool(
+        const deleteStudentDetails = await StudentService.deleteStudent(
           req.body
         );
         res.status(201).json({
           status: "success",
-          message: "School deleted successfully",
+          message: "Student deleted successfully",
           data: {
-            username: deleteSchoolDetails?.username,
-            id: deleteSchoolDetails?._id,
-            email: deleteSchoolDetails?.email,
-            isDeleted: deleteSchoolDetails?.isDeleted,
+            name: deleteStudentDetails?.name,
+            class: deleteStudentDetails?.standard,
+            id: deleteStudentDetails?._id,
+            isDeleted: deleteStudentDetails?.isDeleted,
           },
         });
       }
@@ -130,5 +146,4 @@ class SchoolController {
     }
   }
 }
-
-export default SchoolController;
+export default StudentController;

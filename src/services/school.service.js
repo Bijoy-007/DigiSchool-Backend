@@ -22,7 +22,7 @@ class SchoolService {
         if (isSchoolFound) {
           reject(
             new Error("This email is already used by some other school", {
-              cause: { indicator: "db", status: 400 },
+              cause: { indicator: "db", status: 404 },
             })
           );
           return;
@@ -64,7 +64,7 @@ class SchoolService {
     });
   }
 
-  async getSchoolService(payload) {
+  async getSchool(payload) {
     return new Promise(async (resolve, reject) => {
       const { email } = payload;
       try {
@@ -73,7 +73,7 @@ class SchoolService {
         if (!isSchoolFound) {
           reject(
             new Error("This School is not found", {
-              cause: { indicator: "db", status: 400 },
+              cause: { indicator: "db", status: 404 },
             })
           );
           return;
@@ -87,30 +87,31 @@ class SchoolService {
     });
   }
 
-  async updateSchoolService(payload) {
+  async updateSchool(payload) {
     return new Promise(async (resolve, reject) => {
       const { username, schoolName, highestGrade, lowestGrade, email } =
         payload;
 
       try {
-        const findSchool = await SchoolModel.findOne({ email });
-        console.log("The school is: ", findSchool);
+        const foundSchool = await SchoolModel.findOne({ email });
 
-        if (!findSchool) {
+        if (!foundSchool) {
           reject(
             new Error("This School is not found", {
-              cause: { indicator: "db", status: 400 },
+              cause: { indicator: "db", status: 404 },
             })
           );
           return;
         } else {
+          
           // Now updating all the payload values
-          findSchool.username = username;
-          findSchool.email = email;
-          findSchool.schoolName = schoolName;
-          findSchool.highestGrade = highestGrade;
-          findSchool.lowestGrade = lowestGrade;
-          const setIsUpdated = await findSchool.save();
+          foundSchool.username = username;
+          foundSchool.email = email;
+          foundSchool.schoolName = schoolName;
+          foundSchool.highestGrade = highestGrade;
+          foundSchool.lowestGrade = lowestGrade;
+          
+          const setIsUpdated = await foundSchool.save();
 
           resolve(setIsUpdated);
           
@@ -121,17 +122,17 @@ class SchoolService {
     });
   }
 
-  async deleteSchoolService(payload) {
+  async deleteSchool(payload) {
     return new Promise(async (resolve, reject) => {
       const { email, password } = payload;
 
       try {
-        const findSchool = await SchoolModel.findOne({ email });
+        const foundSchool = await SchoolModel.findOne({ email });
 
-        if (!findSchool || findSchool.isDeleted === true) {
+        if (!foundSchool || foundSchool.isDeleted === true) {
           reject(
             new Error("This School is not found", {
-              cause: { indicator: "db", status: 400 },
+              cause: { indicator: "db", status: 404 },
             })
           );
           return;
@@ -142,14 +143,14 @@ class SchoolService {
            */
           const isCorrectPassword = await bcrpt.compare(
             password,
-            findSchool.password
+            foundSchool.password
           );
 
           if (isCorrectPassword) {
             console.log("Password is correct");
             // Now set isDeleted to true of the School if the password is correct.
-            findSchool.isDeleted = true;
-            const setIsUpdated = await findSchool.save();
+            foundSchool.isDeleted = true;
+            const setIsUpdated = await foundSchool.save();
             resolve(setIsUpdated);
           } else {
             //* Password does not match
