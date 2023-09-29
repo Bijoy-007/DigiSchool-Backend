@@ -30,7 +30,7 @@ router.post(
     body("mobileNo").notEmpty().isMobilePhone(),
     body("address").notEmpty(),
     body("bloodGroup").notEmpty(),
-    body("section").notEmpty().isIn(["a", "b", "c", "d", "A", "B", "C", "D"]),
+    body("section").notEmpty(),
     body("email").notEmpty().isEmail(),
   ],
   studentController.createStudent
