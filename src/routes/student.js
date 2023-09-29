@@ -12,6 +12,7 @@ router.post(
   [
     body("name").notEmpty(),
     body("parentName").notEmpty(),
+    body("gender").notEmpty(),
     body("standard")
       .notEmpty()
       .custom((value) => {
