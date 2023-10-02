@@ -59,6 +59,31 @@ class StudentController {
     }
   }
 
+  async getStudentsBySchool(req, res, next) {
+    try {
+      const errors = validationResult(req, res);      
+      
+      if (!errors.isEmpty()) {
+        /**
+         * If there is any error then throwing error along with details.
+         */
+        throw new Error("Field validation failed!", {
+          cause: { indicator: "validation", status: 400, details: errors },
+        });
+      }
+      // * Storing the available students from DB
+      const foundStudents = await StudentService.getStudentsBySchool(req.body);
+
+      res.status(200).json({
+        status: "success",
+        message: "Students found",
+        data: foundStudents,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async getStudent(req, res, next) {
     try {
       const errors = validationResult(req);
@@ -104,6 +129,7 @@ class StudentController {
         message: "Student updated successfully",
         data: {
           name: foundStudent?.name,
+          parentName: foundStudent?.parentName,
           standard: foundStudent?.standard,
           section: foundStudent?.section,
           roll: foundStudent?.roll,
