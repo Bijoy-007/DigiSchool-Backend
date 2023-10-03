@@ -16,7 +16,6 @@ class AuthService {
       try {
         // * First checking wheather the user is registered or not
         const foundSchool = await schoolModel.findOne({ email });
-        console.log("foundSchool = ", foundSchool);
         if (!foundSchool) {
           throw new Error("No school found with the given email!", {
             cause: { indicator: "not_found", status: 400 },
