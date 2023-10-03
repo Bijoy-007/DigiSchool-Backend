@@ -13,6 +13,10 @@ const studentSchema = new Schema(
       type: Schema.Types.String,
       required: true,
     },
+    gender: {
+      type: Schema.Types.String,
+      required: true,
+    },
     standard: {
       type: Schema.Types.String,
       required: true,

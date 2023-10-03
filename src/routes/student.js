@@ -12,6 +12,7 @@ router.post(
   [
     body("name").notEmpty(),
     body("parentName").notEmpty(),
+    body("gender").notEmpty(),
     body("standard")
       .notEmpty()
       .custom((value) => {
@@ -21,25 +22,38 @@ router.post(
          **/
         return +value > 0 && +value < 13;
       }),
-    body("roll")
-      .notEmpty()
-      .custom((value) => {
-        return +value > 0 && +value < 100;
-      }),
+    body("roll").notEmpty(),
     body("mobileNo").notEmpty().isMobilePhone(),
     body("address").notEmpty(),
     body("bloodGroup").notEmpty(),
-    body("section").notEmpty().isIn(["a", "b", "c", "d", "A", "B", "C", "D"]),
+    body("section").notEmpty(),
     body("email").notEmpty().isEmail(),
   ],
   studentController.createStudent
 );
 
+// * To get all the students of every school
 router.get("/get_students", studentController.getStudents);
+
+// * To get all the students of a particular school
+router.post(
+  "/get_students_by_school",
+  [body("email").notEmpty()],
+  studentController.getStudentsBySchool
+);
 
 router.post(
   "/get_student",
-  [body("name").notEmpty()],
+  [
+    body("standard")
+      .notEmpty()
+      .custom((value) => {
+        return +value > 0 && +value < 13;
+      }),
+    body("section").notEmpty(),
+    body("roll").notEmpty(),
+    body("email").notEmpty(),
+  ],
   studentController.getStudent
 );
 
@@ -51,7 +65,15 @@ router.post(
       .custom((value) => {
         return +value > 0 && +value < 13;
       }),
+    body("section").notEmpty(),
     body("roll").notEmpty(),
+    body("email").notEmpty(),
+    body("parentNameToUpdate").notEmpty(),
+    body("standardToUpdate").notEmpty(),
+    body("sectionToUpdate").notEmpty(),
+    body("rollToUpdate").notEmpty(),
+    body("mobileNoToUpdate").notEmpty(),
+    body("addressToUpdate").notEmpty(),
   ],
   studentController.updateStudent
 );
@@ -59,14 +81,14 @@ router.post(
 router.post(
   "/delete_student",
   [
-    body("name").notEmpty(),
     body("standard")
       .notEmpty()
       .custom((value) => {
         return +value > 0 && +value < 13;
       }),
-    body("section").notEmpty().isIn(["a", "b", "c", "d", "A", "B", "C", "D"]),
+    body("section").notEmpty(),
     body("roll").notEmpty(),
+    body("email").notEmpty().isEmail(),
   ],
   studentController.deleteStudent
 );

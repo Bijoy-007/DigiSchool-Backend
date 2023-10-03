@@ -12,14 +12,13 @@ class StudentService {
           parentName,
           standard,
           section,
+          gender,
           roll,
           mobileNo,
           address,
           bloodGroup,
           email,
         } = payload;
-
-        console.log(payload);
 
         // * Check if the school exists
         // * If not exist then reject else add the school's name to new student
@@ -33,7 +32,6 @@ class StudentService {
             })
           );
         }
-
         /**
          * If another student is present in the same standard same section
          * with same roll no
@@ -42,6 +40,7 @@ class StudentService {
           standard,
           section,
           roll,
+          schoolId: foundSchool._id,
         });
 
         // * Check if the student is already present or not
@@ -57,6 +56,7 @@ class StudentService {
         const newStudent = new StudentModel({
           name,
           parentName,
+          gender,
           standard,
           section,
           roll,
@@ -103,7 +103,45 @@ class StudentService {
           );
           return;
         }
+        // * Else resolve
+        resolve(foundStudents);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
 
+  async getStudentsBySchool(payload) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const email = payload;
+
+        // * Check if the school exists
+        // * If not exist then reject else add the school's name to new student
+        let foundSchool = await SchoolModel.findOne(email);
+
+        if (!foundSchool) {
+          reject(
+            new Error("There is no school in this email", {
+              cause: { indicator: "db", status: 404 },
+            })
+          );
+        }
+        // * Checking all the students of found school from Database
+        const foundStudents = await StudentModel.find({
+          schoolId: foundSchool._id,
+        });
+
+        // * If no students are found reject
+        if (foundStudents.length === 0) {
+          reject(
+            new Error("No student found", {
+              indicator: "DB",
+              status: 404,
+            })
+          );
+          return;
+        }
         // * Else resolve
         resolve(foundStudents);
       } catch (error) {
@@ -114,22 +152,38 @@ class StudentService {
 
   async getStudent(payload) {
     return new Promise(async (resolve, reject) => {
-      const query = payload;
-
       try {
-        const foundStudents = await StudentModel.find(query);
+        const { standard, section, roll, email } = payload;
+
+        // * Check if the school exists
+        let foundSchool = await SchoolModel.findOne({ email });
+
+        if (!foundSchool) {
+          reject(
+            new Error("There is no school in this email", {
+              cause: { indicator: "db", status: 404 },
+            })
+          );
+        }
+        // * Checking a single student from Database
+        const foundStudent = await StudentModel.findOne({
+          schoolId: foundSchool._id,
+          standard,
+          section,
+          roll,
+        });
+
         // * If no students are found reject
-        if (!foundStudents) {
+        if (!foundStudent) {
           reject(
             new Error("No student found", {
-              cause: { indicator: "DB", status: 404 },
+              indicator: "DB",
+              status: 404,
             })
           );
           return;
         }
-
-        // * Else resolve
-        resolve(foundStudents);
+        resolve(foundStudent);
       } catch (error) {
         reject(error);
       }
@@ -138,26 +192,58 @@ class StudentService {
 
   async updateStudent(payload) {
     return new Promise(async (resolve, reject) => {
-      const query = payload;
-
       try {
-        const foundStudents = await StudentModel.findOne(query);
+        const {
+          standard,
+          section,
+          roll,
+          email,
+          parentNameToUpdate,
+          standardToUpdate,
+          sectionToUpdate,
+          rollToUpdate,
+          mobileNoToUpdate,
+          addressToUpdate,
+        } = payload;
+
+        // * Check if the school exists
+        let foundSchool = await SchoolModel.findOne({ email });
+
+        if (!foundSchool) {
+          reject(
+            new Error("There is no school in this email", {
+              cause: { indicator: "db", status: 404 },
+            })
+          );
+        }
+        // * Checking a single student that will be updated
+        const foundStudent = await StudentModel.findOne({
+          schoolId: foundSchool._id,
+          standard,
+          section,
+          roll,
+        });
 
         // * If no students are found reject
-        if (!foundStudents) {
+        if (!foundStudent) {
           reject(
             new Error("No student found", {
-              cause: { indicator: "DB", status: 404 },
+              indicator: "DB",
+              status: 404,
             })
           );
           return;
         }
 
-        // Now updating all the payload values
-        foundStudents.standard = query?.standard;
-        foundStudents.roll = query?.roll;
+        // Update the student's properties
+        foundStudent.parentName = parentNameToUpdate;
+        foundStudent.standard = standardToUpdate;
+        foundStudent.section = sectionToUpdate;
+        foundStudent.roll = rollToUpdate;
+        foundStudent.mobileNo = mobileNoToUpdate;
+        foundStudent.address = addressToUpdate;
 
-        const setIsUpdated = await foundStudents.save();
+        const setIsUpdated = await foundStudent.save();
 
         resolve(setIsUpdated);
       } catch (error) {
@@ -168,27 +254,43 @@ class StudentService {
 
   async deleteStudent(payload) {
     return new Promise(async (resolve, reject) => {
-      const query = payload;
-
       try {
-        const foundStudent = await StudentModel.findOne(query);
-        console.log(foundStudent);
+        const { standard, section, roll, email } = payload;
 
-        if (!foundStudent || foundStudent.isDeleted === true) {
-          console.log("bug", foundStudent);
+        // * Check if the school exists
+        let foundSchool = await SchoolModel.findOne({ email });
+  
+        if (!foundSchool) {
           reject(
-            new Error("This Student is not found", {
+            new Error("There is no school in this email", {
               cause: { indicator: "db", status: 404 },
             })
           );
+        }
+        // * Checking a single student from Database
+        const foundStudent = await StudentModel.findOne({
+          schoolId: foundSchool._id,
+          standard,
+          section,
+          roll,
+        });
+  
+        // * If no students are found reject
+        if (!foundStudent || foundStudent.isDeleted === true) {
+          reject(
+            new Error("No student found", {
+              indicator: "DB",
+              status: 404,
+            })
+          );
           return;
-        } else {
+        }
           // As the student is present now setting isDeleted to true
           foundStudent.isDeleted = true;
 
           const setIsUpdated = await foundStudent.save();
           resolve(setIsUpdated);
-        }
+        
       } catch (error) {
         reject(error);
       }

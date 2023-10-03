@@ -10,6 +10,7 @@ dotenv.config();
 // * Local imports
 import schoolRoutes from "./src/routes/school.js";
 import studentRoutes from "./src/routes/student.js";
+import authRoutes from "./src/routes/auth.js";
 import globalErrorHandler from "./src/middlewares/globalErrorHandler.js";
 
 // * The express app
@@ -30,9 +31,10 @@ mongoose
     console.error("DB connection failed", err);
   });
 
-// * School routes
+// * All App routes
 app.use("/school", schoolRoutes);
 app.use("/student", studentRoutes);
+app.use("/auth", authRoutes)
 
 app.get("/", function (req, res) {
   res.send("Hello World");
