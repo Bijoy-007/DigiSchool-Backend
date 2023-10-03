@@ -6,15 +6,15 @@ class SchoolService {
   constructor() {}
   async createNewSchool(payload) {
     return new Promise(async (resolve, reject) => {
-      const {
-        username,
-        password,
-        schoolName,
-        highestGrade,
-        lowestGrade,
-        email,
-      } = payload;
       try {
+        const {
+          username,
+          password,
+          schoolName,
+          highestGrade,
+          lowestGrade,
+          email,
+        } = payload;
         /**
          * If another school is present with the same Email
          */
