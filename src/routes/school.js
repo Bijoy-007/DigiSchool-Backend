@@ -37,4 +37,36 @@ router.post(
   schoolController.createNewSchool
 );
 
+router.post(
+  "/get_school",
+  [body("email").notEmpty().isEmail()],
+  schoolController.getSchool
+);
+
+router.post(
+  "/update_school",
+  [
+    body("email").notEmpty().isEmail(),
+    body("username").notEmpty(),
+    body("schoolName").notEmpty(),
+    body("lowestGrade")
+      .notEmpty()
+      .custom((value) => {
+        return +value > 0 && +value < 13;
+      }),
+    body("highestGrade")
+      .notEmpty()
+      .custom((value, { req }) => {
+        return +value > 0 && +value < 13 && +value >= req.body.lowestGrade;
+      }),
+  ],
+  schoolController.updateSchool
+);
+
+router.post(
+  "/delete_school",
+  [body("email").notEmpty().isEmail(), body("password").notEmpty()],
+  schoolController.deleteSchool
+);
+
 export default router;
