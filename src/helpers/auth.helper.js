@@ -21,7 +21,7 @@ class AuthHelper {
              * 1 Seceond = 1000 Mili seconds
              * So 10 Minutes = 10 X 60 seconds = 10 X 60 X 1000 mili seconds
              */
-            expiresIn: 10 * 60 * 100,
+            expiresIn: 10 * 60 * 1000,
           }
         );
 

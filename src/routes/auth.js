@@ -18,7 +18,15 @@ router.post(
 router.post(
   "/refresh_access_token",
   [body("refreshToken").notEmpty().withMessage("No refresh token attached!")],
+  validationErrorHandler,
   authController.refreshAccessToken
-)
+);
+
+router.post(
+  "/delete_refresh_token",
+  [body("refreshToken").notEmpty().withMessage("No refresh token attached!")],
+  validationErrorHandler,
+  authController.deleteRefreshToken
+);
 
 export default router;
