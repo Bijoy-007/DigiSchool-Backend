@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 
 import AuthHelper from "../helpers/auth.helper.js";
 import schoolModel from "../models/school.model.js";
+import RefreshToken from "../models/refreshToken.model.js";
 
 class AuthService {
   constructor() {}
@@ -93,6 +94,37 @@ class AuthService {
         resolve({
           accessToken,
           refreshToken,
+        });
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
+  async deleteRefreshToken(refreshToken, ipAddress) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // * Finding tge refresh token
+        const foundToken = await RefreshToken.findOne({
+          token: refreshToken,
+          ipAddress,
+        });
+
+        // * If no refresh token is not found
+        if (!foundToken) {
+          reject(
+            new Error("Invalid refresh token. Can't delete.", {
+              cause: { indicator: "auth", status: 400 },
+            })
+          );
+        }
+
+        // * If found then marking the token as deleted
+        foundToken.isDeleted = true;
+        await foundToken.save();
+
+        resolve({
+          isSuccessful: true,
         });
       } catch (err) {
         reject(err);

@@ -57,6 +57,32 @@ class AuthController {
       next(err);
     }
   }
+
+  /**
+   * Controller to mark the refresk token as deleted
+   * @param {req.body} contains the following properties
+   * @param {refreshToken}
+   */
+  async deleteRefreshToken(req, res, next) {
+    try {
+      const { refreshToken } = req.body;
+
+      const { isSuccessful } = await AuthService.deleteRefreshToken(
+        refreshToken,
+        req.ip
+      );
+
+      if (isSuccessful) {
+        return res.status(200).json({
+          status: "success",
+          message: "Refresh token deleted successful!",
+          data: {},
+        });
+      }
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 export default AuthController;
