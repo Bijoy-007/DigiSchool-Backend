@@ -15,4 +15,10 @@ router.post(
   authController.login
 );
 
+router.post(
+  "/refresh_access_token",
+  [body("refreshToken").notEmpty().withMessage("No refresh token attached!")],
+  authController.refreshAccessToken
+)
+
 export default router;
