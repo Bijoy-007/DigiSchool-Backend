@@ -11,6 +11,7 @@ dotenv.config();
 import schoolRoutes from "./src/routes/school.js";
 import studentRoutes from "./src/routes/student.js";
 import authRoutes from "./src/routes/auth.js";
+import standardRoutes from "./src/routes/standard.js"
 import globalErrorHandler from "./src/middlewares/globalErrorHandler.js";
 
 // * The express app
@@ -35,6 +36,7 @@ mongoose
 app.use("/school", schoolRoutes);
 app.use("/student", studentRoutes);
 app.use("/auth", authRoutes)
+app.use("/standard", standardRoutes)
 
 app.get("/", function (req, res) {
   res.send("Hello World");
