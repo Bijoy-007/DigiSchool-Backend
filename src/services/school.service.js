@@ -8,11 +8,8 @@ class SchoolService {
     return new Promise(async (resolve, reject) => {
       try {
         const {
-          username,
           password,
           schoolName,
-          highestGrade,
-          lowestGrade,
           email,
         } = payload;
         /**
@@ -35,11 +32,8 @@ class SchoolService {
         const hash = await bcrpt.hash(password, 12);
 
         const newSchool = new SchoolModel({
-          username,
           password: hash,
           schoolName,
-          highestGrade,
-          lowestGrade,
           email,
         });
 
@@ -89,7 +83,7 @@ class SchoolService {
 
   async updateSchool(payload) {
     return new Promise(async (resolve, reject) => {
-      const { username, schoolName, highestGrade, lowestGrade, email } =
+      const { username, schoolName, email } =
         payload;
 
       try {
@@ -105,11 +99,8 @@ class SchoolService {
         } else {
           
           // Now updating all the payload values
-          foundSchool.username = username;
           foundSchool.email = email;
           foundSchool.schoolName = schoolName;
-          foundSchool.highestGrade = highestGrade;
-          foundSchool.lowestGrade = lowestGrade;
           
           const setIsUpdated = await foundSchool.save();
 

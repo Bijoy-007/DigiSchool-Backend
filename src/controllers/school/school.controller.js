@@ -7,11 +7,8 @@ class SchoolController {
   /**
    * Controller to create a new school
    * @param {req.body} contains the following properties
-   * @param {username}
    * @param {password}
    * @param {schoolName}
-   * @param {highestGrade}
-   * @param {lowestGrade}
    * @param {email}
    */
   async createNewSchool(req, res, next) {
@@ -87,12 +84,9 @@ class SchoolController {
         status: "success",
         message: "School Updated successfully",
         data: {
-          username: updatedFieldDetails?.username,
           id: updatedFieldDetails?._id,
           email: updatedFieldDetails?.email,
-          schoolName: updatedFieldDetails?.schoolName,
-          lowestGrade: updatedFieldDetails?.lowestGrade,
-          highestGrade: updatedFieldDetails?.highestGrade,
+          schoolName: updatedFieldDetails?.schoolName
         },
       });
     } catch (error) {
@@ -118,7 +112,6 @@ class SchoolController {
           status: "success",
           message: "School deleted successfully",
           data: {
-            username: deleteSchoolDetails?.username,
             id: deleteSchoolDetails?._id,
             email: deleteSchoolDetails?.email,
             isDeleted: deleteSchoolDetails?.isDeleted,

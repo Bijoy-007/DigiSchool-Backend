@@ -3,10 +3,6 @@ const { Schema } = mongoose;
 
 const schoolSchema = new Schema(
   {
-    username: {
-      type: Schema.Types.String,
-      required: true,
-    },
     email: {
         type: Schema.Types.String,
         required: true,
@@ -16,14 +12,6 @@ const schoolSchema = new Schema(
       required: true,
     },
     schoolName: {
-      type: Schema.Types.String,
-      required: true,
-    },
-    lowestGrade: {
-      type: Schema.Types.String,
-      required: true,
-    },
-    highestGrade: {
       type: Schema.Types.String,
       required: true,
     },
