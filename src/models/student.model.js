@@ -47,7 +47,8 @@ const studentSchema = new Schema(
     },
     schoolId: {
       type: Schema.Types.ObjectId,
-      ref: "schools",
+      required: true,
+      ref: "School",
     },
   },
   {
