@@ -115,7 +115,6 @@ class StudentService {
     return new Promise(async (resolve, reject) => {
       try {
         const email = payload;
-
         // * Check if the school exists
         // * If not exist then reject else add the school's name to new student
         let foundSchool = await SchoolModel.findOne(email);
@@ -154,7 +153,6 @@ class StudentService {
     return new Promise(async (resolve, reject) => {
       try {
         const { standard, section, roll, email } = payload;
-
         // * Check if the school exists
         let foundSchool = await SchoolModel.findOne({ email });
 

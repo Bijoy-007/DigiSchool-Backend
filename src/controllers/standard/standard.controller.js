@@ -22,6 +22,42 @@ class StandardController {
       next(error);
     }
   }
+
+  async getStandardBySchool(req, res, next) {
+    try {
+      const schoolId = req.body;
+
+      const standardDetails = await StandardService.getStandardBySchool(
+        schoolId,
+      );
+
+      return res.status(201).json({
+        status: "success",
+        message: "Standard found successfully",
+        data: standardDetails,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateStandard(req, res, next) {
+    try {
+      const schoolId = req.body;
+
+      const standardDetails = await StandardService.updateStandard(
+        schoolId,
+      );
+
+      return res.status(201).json({
+        status: "success",
+        message: "Standard found successfully",
+        data: standardDetails,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default new StandardController();
