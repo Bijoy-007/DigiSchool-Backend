@@ -7,7 +7,6 @@ class StudentService {
   constructor() {}
 
   async createStudent(payload) {
-
     return new Promise(async (resolve, reject) => {
       try {
         const {
@@ -20,7 +19,7 @@ class StudentService {
           mobileNo,
           address,
           bloodGroup,
-          schoolId
+          schoolId,
         } = payload;
         /**
          * If another student is present in the same standard same section
@@ -109,11 +108,25 @@ class StudentService {
         const limit = parseInt(size);
         const skip = (page - 1) * size;
 
+        let query = {
+          schoolId,
+          isDeleted: false,
+        };
+
+        // * If search string passed in the payload
+        if (payload?.searchString) {
+          query = {
+            ...query,
+            $text: { $search: payload?.searchString },
+          };
+        }
+
         const foundStudents = await studentModel
-          .find({ schoolId, isDeleted: false })
+          .find(query)
           .limit(limit)
           .skip(skip);
-        const count = await studentModel.countDocuments({ schoolId });
+        const count = await studentModel.countDocuments(query
+        );
 
         if (!foundStudents || foundStudents.length < 1) {
           reject(
