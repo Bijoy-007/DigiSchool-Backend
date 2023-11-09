@@ -34,6 +34,7 @@ class StandardService {
         // * Checking if the standard is available or not
         const isStandardFound = await StandardModel.find({
           schoolId: schoolId,
+          isDeleted: false,
         });
 
         if (!isStandardFound) {
@@ -44,8 +45,7 @@ class StandardService {
           );
           return;
         }
-
-        // * If the School is found we will simply resolve it
+        // * If the Standard is found we will resolve it
         resolve(isStandardFound);
       } catch (err) {
         reject(err);
@@ -55,12 +55,13 @@ class StandardService {
 
   async updateStandard(payload) {
     return new Promise(async (resolve, reject) => {
-      const { standard_id, standard_name, sections } = payload;
+      const { standard_id, standard_name, sections, schoolId } = payload;
 
       try {
         // * Checking if the standard is available or not
         const isStandardFound = await StandardModel.findOne({
-          _id: standard_id,
+            schoolId,
+            _id: standard_id,
         });
 
         if (!isStandardFound) {
@@ -79,6 +80,7 @@ class StandardService {
 
         resolve(setIsUpdated);
       } catch (err) {
+        console.log("ERR =", err);
         reject(err);
       }
     });

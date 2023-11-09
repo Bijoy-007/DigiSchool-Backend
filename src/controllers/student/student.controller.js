@@ -62,7 +62,6 @@ class StudentController {
   async getStudentsBySchool(req, res, next) {
     try {
       const errors = validationResult(req, res);      
-      
       if (!errors.isEmpty()) {
         /**
          * If there is any error then throwing error along with details.

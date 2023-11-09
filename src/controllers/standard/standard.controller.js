@@ -43,10 +43,10 @@ class StandardController {
 
   async updateStandard(req, res, next) {
     try {
-      const schoolId = req.body;
+      const payload = req.body;
 
       const standardDetails = await StandardService.updateStandard(
-        schoolId,
+        payload,
       );
 
       return res.status(201).json({

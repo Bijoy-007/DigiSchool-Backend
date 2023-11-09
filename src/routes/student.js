@@ -2,6 +2,7 @@ import express from "express";
 import { body } from "express-validator";
 
 import StudentController from "../controllers/student/student.controller.js";
+import checkAuth from "../middlewares/checkAuth.js";
 
 const router = express.Router();
 
@@ -9,25 +10,24 @@ const studentController = new StudentController();
 
 router.post(
   "/create_student",
+  checkAuth,
   [
     body("name").notEmpty(),
     body("parentName").notEmpty(),
     body("gender").notEmpty(),
-    body("standard")
-      .notEmpty()
-      .custom((value) => {
-        /**
-         * As the value will be passed as a string that's why first
-         * converting that to number then doing the validation
-         **/
-        return +value > 0 && +value < 13;
-      }),
+    body("standard").notEmpty(),
+      // .custom((value) => {
+      //   /**
+      //    * As the value will be passed as a string that's why first
+      //    * converting that to number then doing the validation
+      //    **/
+      //   return +value > 0 && +value < 13;
+      // }),
     body("roll").notEmpty(),
     body("mobileNo").notEmpty().isMobilePhone(),
     body("address").notEmpty(),
     body("bloodGroup").notEmpty(),
     body("section").notEmpty(),
-    body("email").notEmpty().isEmail(),
   ],
   studentController.createStudent
 );
@@ -38,7 +38,12 @@ router.get("/get_students", studentController.getStudents);
 // * To get all the students of a particular school
 router.post(
   "/get_students_by_school",
-  [body("email").notEmpty()],
+  checkAuth,
+  [
+    body("schoolId").notEmpty().withMessage("No school ID was passed!"),
+    body("page").notEmpty(),
+    body("size").notEmpty()
+],
   studentController.getStudentsBySchool
 );
 
