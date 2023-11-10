@@ -6,6 +6,20 @@ class StandardService {
   async createStandard(schoolId, standard_name, sections) {
     return new Promise(async (resolve, reject) => {
       try {
+
+        const isStandardFound = await StandardModel.find({
+          schoolId,
+          isDeleted: false,
+        });
+
+        if (isStandardFound) {
+          reject(
+            new Error("Duplicate standard found", {
+              cause: { indicator: "db", status: 404 },
+            })
+          );
+          return;
+        }
         const newStandard = new StandardModel({
           standard_name,
           schoolId,

@@ -16,13 +16,6 @@ router.post(
     body("parentName").notEmpty(),
     body("gender").notEmpty(),
     body("standard").notEmpty(),
-      // .custom((value) => {
-      //   /**
-      //    * As the value will be passed as a string that's why first
-      //    * converting that to number then doing the validation
-      //    **/
-      //   return +value > 0 && +value < 13;
-      // }),
     body("roll").notEmpty(),
     body("mobileNo").notEmpty().isMobilePhone(),
     body("address").notEmpty(),
@@ -41,9 +34,21 @@ router.post(
   checkAuth,
   [
     body("schoolId").notEmpty().withMessage("No school ID was passed!"),
-    body("page").notEmpty(),
-    body("size").notEmpty()
-],
+    body("page")
+      .notEmpty()
+      .custom((value) => {
+        /**
+         * As the value will be passed as a string that's why first
+         * converting that to number then doing the validation
+         **/
+        return +value > 0;
+      }),
+    body("size")
+      .notEmpty()
+      .custom((value) => {
+        return +value > 0;
+      }),
+  ],
   studentController.getStudentsBySchool
 );
 
@@ -64,15 +69,12 @@ router.post(
 
 router.post(
   "/update_student",
+  checkAuth,
   [
-    body("standard")
-      .notEmpty()
-      .custom((value) => {
-        return +value > 0 && +value < 13;
-      }),
+    body("schoolId").notEmpty().withMessage("No school ID was passed!"),
+    body("standard").notEmpty(),
     body("section").notEmpty(),
     body("roll").notEmpty(),
-    body("email").notEmpty(),
     body("parentNameToUpdate").notEmpty(),
     body("standardToUpdate").notEmpty(),
     body("sectionToUpdate").notEmpty(),

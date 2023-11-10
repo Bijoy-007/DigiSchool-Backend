@@ -117,7 +117,7 @@ class StudentService {
         if (payload?.searchString) {
           query = {
             ...query,
-            $text: { $search: payload?.searchString },
+            $text: { $search: new RegExp(payload?.searchString, 'i') },
           };
         }
 
@@ -188,7 +188,7 @@ class StudentService {
           standard,
           section,
           roll,
-          email,
+          schoolId,
           parentNameToUpdate,
           standardToUpdate,
           sectionToUpdate,
@@ -197,23 +197,15 @@ class StudentService {
           addressToUpdate,
         } = payload;
 
-        // * Check if the school exists
-        let foundSchool = await SchoolModel.findOne({ email });
-
-        if (!foundSchool) {
-          reject(
-            new Error("There is no school in this email", {
-              cause: { indicator: "db", status: 404 },
-            })
-          );
-        }
         // * Checking a single student that will be updated
         const foundStudent = await StudentModel.findOne({
-          schoolId: foundSchool._id,
+          schoolId,
           standard,
           section,
           roll,
         });
+
+        console.log("FoundStudent =", foundStudent);
 
         // * If no students are found reject
         if (!foundStudent) {
@@ -221,6 +213,24 @@ class StudentService {
             new Error("No student found", {
               indicator: "DB",
               status: 404,
+            })
+          );
+          return;
+        }
+
+        const isDuplicateStudent = await StudentModel.findOne({
+          standard: standardToUpdate,
+          section: sectionToUpdate,
+          roll: rollToUpdate,
+          schoolId,
+        });
+
+        // * Check if the student is already present or not
+        // * Reject promise if found duplicacy
+        if (isDuplicateStudent) {
+          reject(
+            new Error("This student is already been admitted", {
+              cause: { indicator: "db", status: 404 },
             })
           );
           return;
