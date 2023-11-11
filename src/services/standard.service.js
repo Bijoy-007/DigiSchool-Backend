@@ -86,6 +86,7 @@ class StandardService {
           );
           return;
         }
+
         // Update the standard's properties
         isStandardFound.standard_name = standard_name;
         isStandardFound.sections = sections;

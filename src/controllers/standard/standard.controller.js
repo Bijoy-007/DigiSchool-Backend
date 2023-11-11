@@ -51,7 +51,7 @@ class StandardController {
 
       return res.status(201).json({
         status: "success",
-        message: "Standard found successfully",
+        message: "Standard updated successfully",
         data: standardDetails,
       });
     } catch (error) {
