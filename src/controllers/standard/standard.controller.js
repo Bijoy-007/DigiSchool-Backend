@@ -58,6 +58,24 @@ class StandardController {
       next(error);
     }
   }
+
+  async deleteStandard(req, res, next) {
+    try {
+      const payload = req.body;
+
+      const standardDetails = await StandardService.deleteStandard(
+        payload,
+      );
+
+      return res.status(201).json({
+        status: "success",
+        message: "Standard deleted successfully",
+        data: standardDetails,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default new StandardController();

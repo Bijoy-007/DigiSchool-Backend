@@ -52,4 +52,15 @@ router.post(
   StandardController.updateStandard
 );
 
+router.post(
+  "/delete_standard",
+  checkAuth,
+  [
+    body("schoolId").notEmpty().withMessage("No school ID was passed!"),
+    body("standard_id").notEmpty(),
+  ],
+  validationErrorHandler,
+  StandardController.deleteStandard
+);
+
 export default router;
