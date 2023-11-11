@@ -75,12 +75,15 @@ router.post(
     body("standard").notEmpty(),
     body("section").notEmpty(),
     body("roll").notEmpty(),
+    body("nameToUpdate").notEmpty(),
     body("parentNameToUpdate").notEmpty(),
     body("standardToUpdate").notEmpty(),
     body("sectionToUpdate").notEmpty(),
     body("rollToUpdate").notEmpty(),
     body("mobileNoToUpdate").notEmpty(),
     body("addressToUpdate").notEmpty(),
+    body("bloodGroupToUpdate").notEmpty(),
+    body("genderToUpdate").notEmpty()
   ],
   studentController.updateStudent
 );

@@ -189,12 +189,15 @@ class StudentService {
           section,
           roll,
           schoolId,
+          nameToUpdate,
           parentNameToUpdate,
           standardToUpdate,
           sectionToUpdate,
           rollToUpdate,
           mobileNoToUpdate,
           addressToUpdate,
+          bloodGroupToUpdate,
+          genderToUpdate
         } = payload;
 
         // * Checking a single student that will be updated
@@ -219,9 +222,15 @@ class StudentService {
         }
 
         const isDuplicateStudent = await StudentModel.findOne({
+          name: nameToUpdate,
+          parentName: parentNameToUpdate,
           standard: standardToUpdate,
           section: sectionToUpdate,
           roll: rollToUpdate,
+          mobileNo: mobileNoToUpdate,
+          address: addressToUpdate,
+          bloodGroup: bloodGroupToUpdate,
+          gender: genderToUpdate,
           schoolId,
         });
 
@@ -236,13 +245,18 @@ class StudentService {
           return;
         }
 
+        console.log("Found Student =", foundStudent);
+
         // Update the student's properties
+        foundStudent.name = nameToUpdate,
         foundStudent.parentName = parentNameToUpdate;
         foundStudent.standard = standardToUpdate;
         foundStudent.section = sectionToUpdate;
         foundStudent.roll = rollToUpdate;
         foundStudent.mobileNo = mobileNoToUpdate;
         foundStudent.address = addressToUpdate;
+        foundStudent.bloodGroup = bloodGroupToUpdate,
+        foundStudent.gender = genderToUpdate
 
         const setIsUpdated = await foundStudent.save();
 
