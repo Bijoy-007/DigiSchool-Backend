@@ -104,13 +104,13 @@ class AuthService {
   async deleteRefreshToken(refreshToken, ipAddress) {
     return new Promise(async (resolve, reject) => {
       try {
-        // * Finding tge refresh token
+        // * Finding the refresh token
         const foundToken = await RefreshToken.findOne({
           token: refreshToken,
           ipAddress,
         });
 
-        // * If no refresh token is not found
+        // * If refresh token is not found
         if (!foundToken) {
           reject(
             new Error("Invalid refresh token. Can't delete.", {

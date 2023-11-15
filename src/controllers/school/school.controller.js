@@ -64,6 +64,32 @@ class SchoolController {
     }
   }
 
+  async changePassword(req, res, next) {
+
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        /**
+         * If there is any error then throwing error along with details.
+         */
+        throw new Error("Field validation failed!", {
+          cause: { indicator: "validation", status: 400, details: errors },
+        });
+      }
+
+      const updatedFieldDetails = await SchoolService.changePassword(
+        req.body
+      );
+
+      res.status(201).json({
+        status: "success",
+        message: "Password Updated successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async updateSchool(req, res, next) {
     try {
       const errors = validationResult(req);

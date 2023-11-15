@@ -29,7 +29,11 @@ const checkAuth = (req, res, next) => {
 
     next();
   } catch (err) {
-    next(err);
+    next(
+      new Error("Invalid token. Can not authenticate :(", {
+        cause: { indicator: "auth", status: 401, details: err },
+      })
+    );
   }
 };
 
