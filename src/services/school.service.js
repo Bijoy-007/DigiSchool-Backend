@@ -7,11 +7,7 @@ class SchoolService {
   async createNewSchool(payload) {
     return new Promise(async (resolve, reject) => {
       try {
-        const {
-          password,
-          schoolName,
-          email,
-        } = payload;
+        const { password, schoolName, email } = payload;
         /**
          * If another school is present with the same Email
          */
@@ -83,8 +79,7 @@ class SchoolService {
 
   async updateSchool(payload) {
     return new Promise(async (resolve, reject) => {
-      const { username, schoolName, email } =
-        payload;
+      const { username, schoolName, email } = payload;
 
       try {
         const foundSchool = await SchoolModel.findOne({ email });
@@ -97,15 +92,78 @@ class SchoolService {
           );
           return;
         } else {
-          
           // Now updating all the payload values
           foundSchool.email = email;
           foundSchool.schoolName = schoolName;
-          
+
           const setIsUpdated = await foundSchool.save();
 
           resolve(setIsUpdated);
-          
+        }
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  async changePassword(payload) {
+    return new Promise(async (resolve, reject) => {
+      const { old_Password, new_Password, confirm_Password, schoolId } =
+        payload;
+
+      try {
+        const foundSchool = await SchoolModel.findOne({ _id: schoolId });
+
+        if (!foundSchool || foundSchool.isDeleted === true) {
+          reject(
+            new Error("This School is not found", {
+              cause: { indicator: "db", status: 404 },
+            })
+          );
+          return;
+        }
+        /**
+         * IF the school is present then hashing the password and matching
+         * with the database's password
+         */
+        const isCorrectPassword = await bcrpt.compare(
+          old_Password,
+          foundSchool.password
+        );
+        if (!isCorrectPassword) {
+          reject(
+            new Error("This password doesn't match with previous password", {
+              cause: { indicator: "db", status: 404 },
+            })
+          );
+          return;
+        }
+        if (new_Password !== confirm_Password) {
+          reject(
+            new Error("This new password doesn't match with confirm password", {
+              cause: { indicator: "db", status: 404 },
+            })
+          );
+          return;
+        }
+        const hash = await bcrpt.hash(new_Password, 12);
+
+        foundSchool.password = hash;
+
+        const updatedSchool = await foundSchool.save();
+
+        /**
+         * IF the school is updated succesully then resolving with the created doc
+         * Otherwise rejecting the promise
+         */
+        if (updatedSchool) {
+          resolve(updatedSchool);
+        } else {
+          reject(
+            new Error("Cannot update school. Something went wrong!", {
+              cause: { indicator: "db", status: 500 },
+            })
+          );
         }
       } catch (error) {
         reject(error);
@@ -138,7 +196,6 @@ class SchoolService {
           );
 
           if (isCorrectPassword) {
-            console.log("Password is correct");
             // Now set isDeleted to true of the School if the password is correct.
             foundSchool.isDeleted = true;
             const setIsUpdated = await foundSchool.save();

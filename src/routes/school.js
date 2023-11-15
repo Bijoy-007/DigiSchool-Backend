@@ -1,5 +1,6 @@
 import express from "express";
 import { body } from "express-validator";
+import checkAuth from "../middlewares/checkAuth.js";
 
 import SchoolController from "../controllers/school/school.controller.js";
 
@@ -31,6 +32,18 @@ router.post(
     body("schoolName").notEmpty()
   ],
   schoolController.updateSchool
+);
+
+router.post(
+  "/change_password",
+  checkAuth,
+  [
+    body("schoolId").notEmpty().withMessage("No school ID was passed!"),
+    body("old_Password").notEmpty(),
+    body("new_Password").notEmpty(),
+    body("confirm_Password").notEmpty()
+  ],
+  schoolController.changePassword
 );
 
 router.post(
