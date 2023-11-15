@@ -170,5 +170,31 @@ class StudentController {
       next(error);
     }
   }
+
+  async downloadStudentData(req, res, next) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        /**
+         * If there is any error then throwing error along with details.
+         */
+        throw new Error("Field validation failed!", {
+          cause: { indicator: "validation", status: 400, details: errors },
+        });
+      } else {
+        const csvData = await StudentService.getStudentsDetailsCSV(req.body);
+
+        /**
+         * These headers are required to indicate the frontend that the API will return Blob data
+         */
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename=student_data.csv');
+
+        res.status(200).send(csvData)
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 export default StudentController;

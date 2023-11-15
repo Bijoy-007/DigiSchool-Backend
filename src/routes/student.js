@@ -83,7 +83,7 @@ router.post(
     body("mobileNoToUpdate").notEmpty(),
     body("addressToUpdate").notEmpty(),
     body("bloodGroupToUpdate").notEmpty(),
-    body("genderToUpdate").notEmpty()
+    body("genderToUpdate").notEmpty(),
   ],
   studentController.updateStudent
 );
@@ -101,6 +101,13 @@ router.post(
     body("email").notEmpty().isEmail(),
   ],
   studentController.deleteStudent
+);
+
+router.post(
+  "/download_student_data",
+  checkAuth,
+  [body("limit").notEmpty(), body("schoolId").notEmpty()],
+  studentController.downloadStudentData
 );
 
 export default router;
