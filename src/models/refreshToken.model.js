@@ -1,28 +1,28 @@
 import mongoose from "mongoose";
 const { Schema } = mongoose;
 
-const schoolSchema = new Schema(
+const refreshTokenSchema = new Schema(
   {
-    email: {
-        type: Schema.Types.String,
-        required: true,
-      },
-    password: {
+    token: {
       type: Schema.Types.String,
       required: true,
     },
-    schoolName: {
+    schoolId: {
+      type: Schema.Types.String,
+      required: true,
+    },
+    ipAddress: {
       type: Schema.Types.String,
       required: true,
     },
     isDeleted: {
       type: Schema.Types.Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-export default mongoose.model("school", schoolSchema);
+export default mongoose.model("refreshToken", refreshTokenSchema);

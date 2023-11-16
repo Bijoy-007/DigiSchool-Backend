@@ -7,27 +7,36 @@ import helmet from "helmet";
 
 dotenv.config();
 
-// * Local imports 
+// * Local imports
 import schoolRoutes from "./src/routes/school.js";
+import studentRoutes from "./src/routes/student.js";
+import authRoutes from "./src/routes/auth.js";
+import standardRoutes from "./src/routes/standard.js"
 import globalErrorHandler from "./src/middlewares/globalErrorHandler.js";
 
 // * The express app
 const app = express();
 
 app.use(express.json());
-app.use(morgan('dev'));
+app.use(morgan("dev"));
 app.use(cors());
 app.use(helmet());
 
 // * Connecting to the DB
-mongoose.connect(process.env.MONGODB_CONNECTION_STRING).then(() => {
-  console.log("Connected to DB successfully!!")
-}).catch((err) => {
-  console.error("DB connection failed", err);
-});
+mongoose
+  .connect(process.env.MONGODB_CONNECTION_STRING)
+  .then(() => {
+    console.log("Connected to DB successfully!!");
+  })
+  .catch((err) => {
+    console.error("DB connection failed", err);
+  });
 
-// * School routes
+// * All App routes
 app.use("/school", schoolRoutes);
+app.use("/student", studentRoutes);
+app.use("/auth", authRoutes)
+app.use("/standard", standardRoutes)
 
 app.get("/", function (req, res) {
   res.send("Hello World");
