@@ -1,7 +1,22 @@
 import { body } from "express-validator";
+import { parse } from "json2csv";
+
 import SchoolModel from "../models/school.model.js";
 import StudentModel from "../models/student.model.js";
 import studentModel from "../models/student.model.js";
+
+const json2csv = parse;
+
+const CSV_FIELDS = [
+  "name",
+  "parentName",
+  "gender",
+  "standard",
+  "roll",
+  "mobileNo",
+  "address",
+  "bloodGroup",
+];
 
 class StudentService {
   constructor() {}
@@ -117,7 +132,7 @@ class StudentService {
         if (payload?.searchString) {
           query = {
             ...query,
-            $text: { $search: new RegExp(payload?.searchString, 'i') },
+            $text: { $search: new RegExp(payload?.searchString, "i") },
           };
         }
 
@@ -125,8 +140,7 @@ class StudentService {
           .find(query)
           .limit(limit)
           .skip(skip);
-        const count = await studentModel.countDocuments(query
-        );
+        const count = await studentModel.countDocuments(query);
 
         if (!foundStudents || foundStudents.length < 1) {
           reject(
@@ -197,7 +211,7 @@ class StudentService {
           mobileNoToUpdate,
           addressToUpdate,
           bloodGroupToUpdate,
-          genderToUpdate
+          genderToUpdate,
         } = payload;
 
         // * Checking a single student that will be updated
@@ -248,15 +262,15 @@ class StudentService {
         console.log("Found Student =", foundStudent);
 
         // Update the student's properties
-        foundStudent.name = nameToUpdate,
-        foundStudent.parentName = parentNameToUpdate;
+        (foundStudent.name = nameToUpdate),
+          (foundStudent.parentName = parentNameToUpdate);
         foundStudent.standard = standardToUpdate;
         foundStudent.section = sectionToUpdate;
         foundStudent.roll = rollToUpdate;
         foundStudent.mobileNo = mobileNoToUpdate;
         foundStudent.address = addressToUpdate;
-        foundStudent.bloodGroup = bloodGroupToUpdate,
-        foundStudent.gender = genderToUpdate
+        (foundStudent.bloodGroup = bloodGroupToUpdate),
+          (foundStudent.gender = genderToUpdate);
 
         const setIsUpdated = await foundStudent.save();
 
@@ -305,6 +319,45 @@ class StudentService {
 
         const setIsUpdated = await foundStudent.save();
         resolve(setIsUpdated);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  /**
+   *
+   * @param {{
+   *   limit: "The number of records to be fetched",
+   *   schoolId: "This will be parsed from the JWT"
+   * }} payload
+   * @returns CSV Blob Data
+   */
+  async getStudentsDetailsCSV(payload) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const { limit, schoolId } = payload;
+
+        const query = {
+          schoolId,
+          isDeleted: false,
+        };
+
+        const studentsDetails = await StudentModel.find(query).limit(limit);
+        if (!studentsDetails) {
+          reject(
+            new Error("No students found", {
+              indicator: "DB",
+              status: 404,
+            })
+          );
+          return;
+        }
+
+        // * Converting the JSON data to CSV format
+        const csvData = json2csv(studentsDetails, { fields: CSV_FIELDS });
+
+        resolve(csvData);
       } catch (error) {
         reject(error);
       }
