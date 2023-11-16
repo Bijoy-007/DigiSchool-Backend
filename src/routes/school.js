@@ -40,8 +40,8 @@ router.post(
   [
     body("schoolId").notEmpty().withMessage("No school ID was passed!"),
     body("old_Password").notEmpty(),
-    body("new_Password").notEmpty(),
-    body("confirm_Password").notEmpty()
+    body("new_Password").notEmpty().isStrongPassword(),
+    body("confirm_Password").notEmpty().isStrongPassword(),
   ],
   schoolController.changePassword
 );
