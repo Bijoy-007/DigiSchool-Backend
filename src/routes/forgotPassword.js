@@ -18,7 +18,6 @@ router.post(
   router.post(
     "/resetPassword",
     [
-      body("id").notEmpty(),
       body("token").notEmpty(),
       body("newPassword").notEmpty().isStrongPassword(),
       body("confirmPassword").notEmpty().isStrongPassword(),

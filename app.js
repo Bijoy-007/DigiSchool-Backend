@@ -22,6 +22,7 @@ app.use(express.json());
 app.use(morgan("dev"));
 app.use(cors());
 app.use(helmet());
+app.use(express.static('public'))
 
 // * Connecting to the DB
 mongoose
@@ -43,6 +44,7 @@ app.use("/forgotPassword", forgotPassword);
 app.get("/", function (req, res) {
   res.send("Hello World");
 });
+
 
 // * Global error handler
 app.use(globalErrorHandler);

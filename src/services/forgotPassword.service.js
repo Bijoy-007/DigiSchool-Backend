@@ -1,12 +1,14 @@
 import bcrpt from "bcrypt";
 import jwt from "jsonwebtoken";
-import nodemailer from "nodemailer";
 import SchoolModel from "../models/school.model.js";
+import SendEmailHelper from "../helpers/util/sendEmail.helper.js";
+import EmailTemplate from "../helpers/assets/emailTemplate.js";
+import verifyResetPasswordJWT from "../helpers/util/verifyResetPasswordJWT.js";
 
 class ForgotPasswordService {
   constructor() {}
 
-  async sendMail(payload) {
+  async sendPasswordResetEmail(payload) {
     return new Promise(async (resolve, reject) => {
       try {
         const email = payload.email;
@@ -15,7 +17,7 @@ class ForgotPasswordService {
         if (!foundSchool) {
           reject(
             new Error("No School Found in this email", {
-              cause: { indicator: "db", status: 500 },
+              cause: { indicator: "db", status: 404 },
             })
           );
         }
@@ -25,53 +27,30 @@ class ForgotPasswordService {
         const token = jwt.sign(
           { id: foundSchool?._id },
           process.env.FORGET_PASSWORD_TOKEN,
-          { expiresIn: "600s" }
+          { expiresIn: "3600s" }
         );
 
-        const setSchoolToken = await SchoolModel.findByIdAndUpdate(
-          { _id: foundSchool._id },
-          { verifytoken: token },
-          { new: true }
-        );
+        foundSchool.verifytoken = token;
+        const setSchoolToken = await foundSchool.save();
 
-        if(!setSchoolToken){
+        if (!setSchoolToken) {
           reject(
-            new Error("Token Add failed", {
+            new Error("Can not  Add Token", {
               cause: { indicator: "db", status: 500 },
             })
           );
         }
 
-        const transporter = nodemailer.createTransport({
-          service: "gmail",
-          secure: true,
-          auth: {
-            user: process.env.EMAIL_ID,
-            pass: process.env.EMAIL_APP_PASSWORD,
-          },
-        });
+        const template =  EmailTemplate.getForgetPasswordEmailTemplate(foundSchool.schoolName, token);
 
-        const mailOptions = {
-          from: process.env.EMAIL_ID,
-          to: "papaihactoberfest4444@gmail.com",
-          subject: "Reset Password Link",
-          text: `The link is only valid for 10 minutes http://localhost:3000/reset_password/${foundSchool?._id}/${setSchoolToken.verifytoken}`,
-        };
 
-        const sendMailResult = transporter.sendMail(
-          mailOptions,
-          function (error) {
-            if (error) {
-              reject(
-                new Error("There is a problem sending email", {
-                  cause: { indicator: "Internal server", status: 500 },
-                })
-              );
-            }
-            const success = "Mail Sent successfully";
-            resolve(success);
-          }
-        );
+        const sendEmailResult = await SendEmailHelper.sendEmail(
+          "papaihactoberfest4444@gmail.com",
+          "Reset Password Link",
+          template,
+        )
+
+        console.log("sendEmailResult = ", sendEmailResult)
       } catch (error) {
         reject(error);
       }
@@ -79,11 +58,15 @@ class ForgotPasswordService {
   }
 
   async resetPassword(payload) {
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
-        const { id, token, newPassword, confirmPassword } = payload;
+        const { token, newPassword, confirmPassword } = payload;
+        const {schoolId} = await verifyResetPasswordJWT(token);
 
-        const foundSchool = await SchoolModel.findOne({ _id: id, verifytoken:token });
+        const foundSchool = await SchoolModel.findOne({
+          _id: schoolId,
+          verifytoken: token,
+        });
 
         if (!foundSchool) {
           reject(
@@ -94,7 +77,10 @@ class ForgotPasswordService {
           return;
         }
 
-        const verifyToken = jwt.verify(token, process.env.FORGET_PASSWORD_TOKEN);
+        const verifyToken = jwt.verify(
+          token,
+          process.env.FORGET_PASSWORD_TOKEN
+        );
 
         if (!verifyToken) {
           reject(

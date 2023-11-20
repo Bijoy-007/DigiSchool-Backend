@@ -17,7 +17,7 @@ class ForgotPasswordController {
         });
       }
 
-      const savedMailDetails = await ForgotPasswordService.sendMail(req.body);
+      const savedMailDetails = await ForgotPasswordService.sendPasswordResetEmail(req.body);
 
       res.status(201).json({
         status: "success",

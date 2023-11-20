@@ -24,6 +24,15 @@ class AuthService {
           });
         }
 
+        if(!foundSchool?.isVerified) {
+          throw new Error(
+            "Please verify your email to login.",
+            {
+              cause: { indicator: "auth", status: 401 },
+            }
+          );
+        }
+
         // * Comparing password
         const isCorrect = await bcrypt.compare(password, foundSchool.password);
 
