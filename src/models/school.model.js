@@ -18,6 +18,9 @@ const schoolSchema = new Schema(
     isDeleted: {
       type: Schema.Types.Boolean,
       default: false
+    },
+    verifytoken:{
+      type: String,
     }
   },
   {
