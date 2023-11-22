@@ -35,7 +35,7 @@ class ForgotPasswordService {
 
         if (!setSchoolToken) {
           reject(
-            new Error("Can not  Add Token", {
+            new Error("Can not Add Token", {
               cause: { indicator: "db", status: 500 },
             })
           );
@@ -50,7 +50,15 @@ class ForgotPasswordService {
           template,
         )
 
-        console.log("sendEmailResult = ", sendEmailResult)
+        if(!sendEmailResult){
+          reject(
+            new Error("Can not send email, try after some time", {
+              cause: { indicator: "db", status: 500 },
+            })
+          );
+        }
+
+        resolve(sendEmailResult);
       } catch (error) {
         reject(error);
       }
@@ -70,7 +78,7 @@ class ForgotPasswordService {
 
         if (!foundSchool) {
           reject(
-            new Error("This School is not found", {
+            new Error("Either incorrect email or the link is invalid", {
               cause: { indicator: "db", status: 404 },
             })
           );
@@ -103,6 +111,7 @@ class ForgotPasswordService {
         const hash = await bcrpt.hash(newPassword, 12);
 
         foundSchool.password = hash;
+        foundSchool.verifytoken = "";
 
         const updatedSchool = await foundSchool.save();
 

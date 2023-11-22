@@ -17,13 +17,13 @@ class ForgotPasswordController {
         });
       }
 
-      const savedMailDetails = await ForgotPasswordService.sendPasswordResetEmail(req.body);
+      const savedEmailDetails = await ForgotPasswordService.sendPasswordResetEmail(req.body);
 
       res.status(201).json({
         status: "success",
-        message: "Mail Sent successfully",
+        message: "A password reset link has been sent to your registered email Id.",
         data: {
-          message: savedMailDetails
+          message: savedEmailDetails
         },
       });
     } catch (error) {
