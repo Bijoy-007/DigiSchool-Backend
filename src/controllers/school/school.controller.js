@@ -13,7 +13,7 @@ class SchoolController {
    */
   async createNewSchool(req, res, next) {
     try {
-      const errors = validationResult(req);
+      const errors = validationResult(req.body);
       if (!errors.isEmpty()) {
         /**
          * If there is any error then throwing error along with details.
@@ -28,7 +28,7 @@ class SchoolController {
 
       res.status(201).json({
         status: "success",
-        message: "School created successfully",
+        message: "A link has been sent to your email Id,Kindy verify your email to register",
         data: {
           username: savedSchoolDetails?.username,
           id: savedSchoolDetails?._id,

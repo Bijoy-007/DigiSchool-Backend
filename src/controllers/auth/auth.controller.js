@@ -1,4 +1,6 @@
+import { validationResult } from "express-validator";
 import AuthService from "../../services/auth.service.js";
+
 
 class AuthController {
   constructor() {}
@@ -81,6 +83,30 @@ class AuthController {
       }
     } catch (err) {
       next(err);
+    }
+  }
+
+  async verifySchool(req, res, next) {
+
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        throw new Error("Field validation failed!", {
+          cause: { indicator: "validation", status: 400, details: errors },
+        });
+      }
+
+      const verifySchoolDetails = await AuthService.verifySchool(req.body);
+
+      res.status(201).json({
+        status: "success",
+        message: "Organisation verified successfully, please login to continue",
+        data: {
+          message: verifySchoolDetails
+        },
+      });
+    } catch (error) {
+      next(error)
     }
   }
 }

@@ -13,6 +13,7 @@ router.post(
   [
     body("email").notEmpty().isEmail(),
     body("password").notEmpty().isStrongPassword(),
+    body("confirm_Password").notEmpty().isStrongPassword(),
     body("schoolName").notEmpty(),
   ],
   schoolController.createNewSchool

@@ -12,7 +12,7 @@ class ForgotPasswordService {
     return new Promise(async (resolve, reject) => {
       try {
         const email = payload.email;
-        const foundSchool = await SchoolModel.findOne({ email: email });
+        const foundSchool = await SchoolModel.findOne({ email: email, isVerified: true });
 
         if (!foundSchool) {
           reject(
@@ -45,7 +45,7 @@ class ForgotPasswordService {
 
 
         const sendEmailResult = await SendEmailHelper.sendEmail(
-          "papaihactoberfest4444@gmail.com",
+          foundSchool?.email,
           "Reset Password Link",
           template,
         )
