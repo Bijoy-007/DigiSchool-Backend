@@ -9,6 +9,15 @@ const router = express.Router();
 const authController = new AuthController();
 
 router.post(
+  "/verifySchool",
+  [
+    body("token").notEmpty(),
+    body("verifyConfirmation").notEmpty(),
+  ],
+  authController.verifySchool
+);
+
+router.post(
   "/login",
   [body("email").notEmpty().isEmail(), body("password").notEmpty()],
   validationErrorHandler,

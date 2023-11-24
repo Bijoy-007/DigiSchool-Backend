@@ -8,10 +8,11 @@ class StandardService {
       try {
         const isStandardFound = await StandardModel.find({
           schoolId,
+          standard_name,
           isDeleted: false,
         });
 
-        if (isStandardFound) {
+        if (isStandardFound?.length) {
           reject(
             new Error("Duplicate standard found", {
               cause: { indicator: "db", status: 404 },

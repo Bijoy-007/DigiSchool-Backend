@@ -13,22 +13,13 @@ class SchoolController {
    */
   async createNewSchool(req, res, next) {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        /**
-         * If there is any error then throwing error along with details.
-         */
-        throw new Error("Field validation failed!", {
-          cause: { indicator: "validation", status: 400, details: errors },
-        });
-      }
-
+      
       // * Creating a new school with the given payload
       const savedSchoolDetails = await SchoolService.createNewSchool(req.body);
 
       res.status(201).json({
         status: "success",
-        message: "School created successfully",
+        message: "A link has been sent to your email Id,Kindy verify your email to register",
         data: {
           username: savedSchoolDetails?.username,
           id: savedSchoolDetails?._id,

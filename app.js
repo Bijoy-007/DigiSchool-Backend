@@ -11,7 +11,8 @@ dotenv.config();
 import schoolRoutes from "./src/routes/school.js";
 import studentRoutes from "./src/routes/student.js";
 import authRoutes from "./src/routes/auth.js";
-import standardRoutes from "./src/routes/standard.js"
+import standardRoutes from "./src/routes/standard.js";
+import forgotPassword from "./src/routes/forgotPassword.js";
 import globalErrorHandler from "./src/middlewares/globalErrorHandler.js";
 
 // * The express app
@@ -21,6 +22,7 @@ app.use(express.json());
 app.use(morgan("dev"));
 app.use(cors());
 app.use(helmet());
+app.use(express.static('public'))
 
 // * Connecting to the DB
 mongoose
@@ -35,12 +37,14 @@ mongoose
 // * All App routes
 app.use("/school", schoolRoutes);
 app.use("/student", studentRoutes);
-app.use("/auth", authRoutes)
-app.use("/standard", standardRoutes)
+app.use("/auth", authRoutes);
+app.use("/standard", standardRoutes);
+app.use("/forgotPassword", forgotPassword);
 
 app.get("/", function (req, res) {
   res.send("Hello World");
 });
+
 
 // * Global error handler
 app.use(globalErrorHandler);

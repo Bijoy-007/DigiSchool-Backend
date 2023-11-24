@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import AuthHelper from "../helpers/auth.helper.js";
 import schoolModel from "../models/school.model.js";
 import RefreshToken from "../models/refreshToken.model.js";
+import verifySchoolJWT from "../helpers/util/verifySchoolJWT.js";
 
 class AuthService {
   constructor() {}
@@ -17,11 +18,20 @@ class AuthService {
     return new Promise(async (resolve, reject) => {
       try {
         // * First checking wheather the user is registered or not
-        const foundSchool = await schoolModel.findOne({ email });
+        const foundSchool = await schoolModel.findOne({ email, isVerified: true });
         if (!foundSchool) {
           throw new Error("No school found with the given email!", {
             cause: { indicator: "not_found", status: 400 },
           });
+        }
+
+        if(!foundSchool?.isVerified) {
+          throw new Error(
+            "Please verify your email to login.",
+            {
+              cause: { indicator: "auth", status: 401 },
+            }
+          );
         }
 
         // * Comparing password
@@ -128,6 +138,74 @@ class AuthService {
         });
       } catch (err) {
         reject(err);
+      }
+    });
+  }
+
+  async verifySchool(payload) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const { token, verifyConfirmation } = payload;
+        const {schoolId} = await verifySchoolJWT(token);
+
+        const foundSchool = await schoolModel.findOne({
+          _id: schoolId,
+          verifytoken: token,
+          isVerified: false,
+        });
+
+        if (!foundSchool) {
+          reject(
+            new Error("Either incorrect email or the link is invalid", {
+              cause: { indicator: "db", status: 404 },
+            })
+          );
+          return;
+        }
+
+        const verifyToken = jwt.verify(
+          token,
+          process.env.CREATED_SCHOOL_TOKEN
+        );
+
+        if (!verifyToken) {
+          reject(
+            new Error("Invalid Token", {
+              cause: { indicator: "db", status: 404 },
+            })
+          );
+          return;
+        }
+
+        if (verifyConfirmation === "false") {
+          reject(
+            new Error("Please verify by clicking the button", {
+              cause: { indicator: "db", status: 404 },
+            })
+          );
+          return;
+        }
+
+        foundSchool.isVerified = true;
+        foundSchool.verifytoken = "";
+
+        const updatedSchool = await foundSchool.save();
+
+        /**
+         * IF the school is updated succesully then resolving with the created doc
+         * Otherwise rejecting the promise
+         */
+        if (updatedSchool) {
+          resolve(updatedSchool);
+        } else {
+          reject(
+            new Error("Cannot update school. Something went wrong!", {
+              cause: { indicator: "db", status: 500 },
+            })
+          );
+        }
+      } catch (error) {
+        reject(error);
       }
     });
   }
