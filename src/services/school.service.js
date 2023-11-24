@@ -79,7 +79,7 @@ class SchoolService {
 
           const sendEmailResult = await SendEmailHelper.sendEmail(
             createdSchool.email,
-            "Verify email I'd",
+            "Email Verification",
             template
           );
 

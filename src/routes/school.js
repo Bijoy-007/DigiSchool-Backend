@@ -3,6 +3,7 @@ import { body } from "express-validator";
 import checkAuth from "../middlewares/checkAuth.js";
 
 import SchoolController from "../controllers/school/school.controller.js";
+import validationErrorHandler from "../middlewares/validationErrorHandler.js";
 
 const router = express.Router();
 
@@ -12,10 +13,11 @@ router.post(
   "/create_school",
   [
     body("email").notEmpty().isEmail(),
-    body("password").notEmpty().isStrongPassword(),
+    body("password").notEmpty().isStrongPassword().withMessage("Password is too weak. Please use a strong password!"),
     body("confirm_Password").notEmpty().isStrongPassword(),
     body("schoolName").notEmpty(),
   ],
+  validationErrorHandler,
   schoolController.createNewSchool
 );
 
