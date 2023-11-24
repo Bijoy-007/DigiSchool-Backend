@@ -4,9 +4,9 @@ const { Schema } = mongoose;
 const schoolSchema = new Schema(
   {
     email: {
-        type: Schema.Types.String,
-        required: true,
-      },
+      type: Schema.Types.String,
+      required: true,
+    },
     password: {
       type: Schema.Types.String,
       required: true,
@@ -17,8 +17,15 @@ const schoolSchema = new Schema(
     },
     isDeleted: {
       type: Schema.Types.Boolean,
-      default: false
-    }
+      default: false,
+    },
+    isVerified: {
+      type: Schema.Types.Boolean,
+      default: false,
+    },
+    verifytoken: {
+      type: String,
+    },
   },
   {
     timestamps: true,

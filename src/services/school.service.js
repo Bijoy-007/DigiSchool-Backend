@@ -1,17 +1,29 @@
 import bcrpt from "bcrypt";
-
+import jwt from "jsonwebtoken";
 import SchoolModel from "../models/school.model.js";
+import SendEmailHelper from "../helpers/util/sendEmail.helper.js";
+import EmailTemplate from "../helpers/assets/emailTemplate.js";
 
 class SchoolService {
   constructor() {}
   async createNewSchool(payload) {
     return new Promise(async (resolve, reject) => {
       try {
-        const { password, schoolName, email } = payload;
+        const { password, confirm_Password, schoolName, email } = payload;
         /**
          * If another school is present with the same Email
          */
-        const isSchoolFound = await SchoolModel.findOne({ email });
+        if (password !== confirm_Password) {
+          reject(
+            new Error("Passwords are differnt", {
+              cause: { indicator: "db", status: 404 },
+            })
+          );
+          return;
+        }
+        const isSchoolFound = await SchoolModel.findOne({
+          email,
+        });
         if (isSchoolFound) {
           reject(
             new Error("This email is already used by some other school", {
@@ -22,7 +34,7 @@ class SchoolService {
         }
         /**
          * IF the school is not present then hashing the password and creating
-         * a new school record
+         * a new school record with isVerified === false
          */
 
         const hash = await bcrpt.hash(password, 12);
@@ -36,10 +48,48 @@ class SchoolService {
         const createdSchool = await newSchool.save();
 
         /**
-         * IF the school is created succesully then resolving with the created doc
+         * IF the school is created succesully then sending mail and resolving with the created doc
          * Otherwise rejecting the promise
          */
         if (createdSchool) {
+          /* If the school is present then we will generate a link with the help of schoolId
+           and jwt token which will be sent to the school's email. */
+
+          const token = jwt.sign(
+            { id: createdSchool?._id },
+            process.env.CREATED_SCHOOL_TOKEN,
+            { expiresIn: "1d" }
+          );
+
+          createdSchool.verifytoken = token;
+          const setSchoolToken = await createdSchool.save();
+
+          if (!setSchoolToken) {
+            reject(
+              new Error("Can not Add Token", {
+                cause: { indicator: "db", status: 500 },
+              })
+            );
+          }
+
+          const template = EmailTemplate.getCreateSchoolTemplate(
+            createdSchool.schoolName,
+            token
+          );
+
+          const sendEmailResult = await SendEmailHelper.sendEmail(
+            createdSchool.email,
+            "Email Verification",
+            template
+          );
+
+          if (!sendEmailResult) {
+            reject(
+              new Error("Can not send email, try after some time", {
+                cause: { indicator: "db", status: 500 },
+              })
+            );
+          }
           resolve(createdSchool._doc);
         } else {
           reject(
