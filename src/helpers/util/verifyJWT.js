@@ -35,6 +35,7 @@ class VerifyJWT {
         reject(error);
       }
     });
+    
   };
 
   verifySchoolJWT = async (token) => {
