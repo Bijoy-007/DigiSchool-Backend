@@ -4,7 +4,6 @@ import jwt from "jsonwebtoken";
 import AuthHelper from "../helpers/auth.helper.js";
 import schoolModel from "../models/school.model.js";
 import RefreshToken from "../models/refreshToken.model.js";
-// import VerifyJWT from "../helpers/util/VerifyJWT.js";
 import VerifyJWT from "../helpers/util/verifyJWT.js";
 
 class AuthService {
