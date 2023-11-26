@@ -12,7 +12,6 @@ router.post(
   "/verifySchool",
   [
     body("token").notEmpty(),
-    body("verifyConfirmation").notEmpty(),
   ],
   authController.verifySchool
 );

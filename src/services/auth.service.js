@@ -4,7 +4,8 @@ import jwt from "jsonwebtoken";
 import AuthHelper from "../helpers/auth.helper.js";
 import schoolModel from "../models/school.model.js";
 import RefreshToken from "../models/refreshToken.model.js";
-import verifySchoolJWT from "../helpers/util/verifySchoolJWT.js";
+// import VerifyJWT from "../helpers/util/VerifyJWT.js";
+import VerifyJWT from "../helpers/util/verifyJWT.js";
 
 class AuthService {
   constructor() {}
@@ -145,8 +146,8 @@ class AuthService {
   async verifySchool(payload) {
     return new Promise(async (resolve, reject) => {
       try {
-        const { token, verifyConfirmation } = payload;
-        const {schoolId} = await verifySchoolJWT(token);
+        const { token } = payload;
+        const {schoolId} = await VerifyJWT.verifySchoolJWT(token);
 
         const foundSchool = await schoolModel.findOne({
           _id: schoolId,
@@ -163,29 +164,9 @@ class AuthService {
           return;
         }
 
-        const verifyToken = jwt.verify(
-          token,
-          process.env.CREATED_SCHOOL_TOKEN
-        );
-
-        if (!verifyToken) {
-          reject(
-            new Error("Invalid Token", {
-              cause: { indicator: "db", status: 404 },
-            })
-          );
-          return;
-        }
-
-        if (verifyConfirmation === "false") {
-          reject(
-            new Error("Please verify by clicking the button", {
-              cause: { indicator: "db", status: 404 },
-            })
-          );
-          return;
-        }
-
+        /* If the school is found then verifying the school 
+         * Setting the token to empty for one time Use
+        */
         foundSchool.isVerified = true;
         foundSchool.verifytoken = "";
 

@@ -1,7 +1,7 @@
 import bcrpt from "bcrypt";
 import jwt from "jsonwebtoken";
 import SchoolModel from "../models/school.model.js";
-import SendEmailHelper from "../helpers/util/sendEmail.helper.js";
+import EmailHelper from "../helpers/util/email.helper.js";
 import EmailTemplate from "../helpers/assets/emailTemplate.js";
 
 class SchoolService {
@@ -72,18 +72,18 @@ class SchoolService {
             );
           }
 
-          const template = EmailTemplate.getCreateSchoolTemplate(
+          const template = EmailTemplate.createSchoolTemplate(
             createdSchool.schoolName,
             token
           );
 
-          const sendEmailResult = await SendEmailHelper.sendEmail(
+          const EmailResult = await EmailHelper.sendEmail(
             createdSchool.email,
             "Email Verification",
             template
           );
 
-          if (!sendEmailResult) {
+          if (!EmailResult) {
             reject(
               new Error("Can not send email, try after some time", {
                 cause: { indicator: "db", status: 500 },

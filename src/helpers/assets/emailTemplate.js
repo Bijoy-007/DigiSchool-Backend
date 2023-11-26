@@ -25,7 +25,7 @@ class EmailTemplate {
       </div>`;
   }
 
-  getCreateSchoolTemplate(schoolName, token) {
+  createSchoolTemplate(schoolName, token) {
     const logoURL = `${process.env.BACKEND_BASE_URL}/images/logo.png`;
     const authUrl = `${process.env.FRONTEND_BASE_URL}/verify_school_email/${token}`;
 

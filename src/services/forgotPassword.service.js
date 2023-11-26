@@ -1,9 +1,9 @@
 import bcrpt from "bcrypt";
 import jwt from "jsonwebtoken";
 import SchoolModel from "../models/school.model.js";
-import SendEmailHelper from "../helpers/util/sendEmail.helper.js";
+import EmailHelper from "../helpers/util/email.helper.js";
 import EmailTemplate from "../helpers/assets/emailTemplate.js";
-import verifyResetPasswordJWT from "../helpers/util/verifyResetPasswordJWT.js";
+import VerifyJWT from "../helpers/util/verifyJWT.js";
 
 class ForgotPasswordService {
   constructor() {}
@@ -44,7 +44,7 @@ class ForgotPasswordService {
         const template =  EmailTemplate.getForgetPasswordEmailTemplate(foundSchool.schoolName, token);
 
 
-        const sendEmailResult = await SendEmailHelper.sendEmail(
+        const sendEmailResult = await EmailHelper.sendEmail(
           foundSchool?.email,
           "Reset Password Link",
           template,
@@ -69,7 +69,7 @@ class ForgotPasswordService {
     return new Promise(async (resolve, reject) => {
       try {
         const { token, newPassword, confirmPassword } = payload;
-        const {schoolId} = await verifyResetPasswordJWT(token);
+        const {schoolId} = await VerifyJWT.verifyResetPasswordJWT(token);
 
         const foundSchool = await SchoolModel.findOne({
           _id: schoolId,

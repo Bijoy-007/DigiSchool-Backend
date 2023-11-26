@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 
-class SendEmail {
+class Email {
   constructor() {}
 
   async sendEmail(to, subject, html) {
@@ -28,4 +28,4 @@ class SendEmail {
   }
 }
 
-export default new SendEmail();
+export default new Email();
