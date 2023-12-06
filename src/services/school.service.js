@@ -23,6 +23,7 @@ class SchoolService {
         }
         const isSchoolFound = await SchoolModel.findOne({
           email,
+          isVerified: true,
         });
         if (isSchoolFound) {
           reject(
