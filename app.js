@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import morgan from "morgan";
 import cors from "cors";
 import helmet from "helmet";
+import cron from "node-cron";
+import axios from "axios";
 
 dotenv.config();
 
@@ -48,6 +50,17 @@ app.get("/", function (req, res) {
 
 // * Global error handler
 app.use(globalErrorHandler);
+
+// * Render.Com server auto run after 14 minutes
+cron.schedule('*/14 * * * *', () => {
+  axios.get(process.env.BACKEND_BASE_URL)
+    .then(response => {
+      console.log('Ping successful');
+    })
+    .catch(error => {
+      console.error('Error pinging server:', error.message);
+    });
+});
 
 app.listen(5000, () => {
   console.log(`Server started on 5000`);
