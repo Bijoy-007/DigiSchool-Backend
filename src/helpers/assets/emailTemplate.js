@@ -1,7 +1,7 @@
 class EmailTemplate {
   constructor() {}
   getForgetPasswordEmailTemplate(schoolName, token) {
-    const logoURL = `${process.env.BACKEND_BASE_URL}/images/logo.png`;
+    const logoURL = `https://drive.google.com/file/d/1A86Wlc1FsBzavIiDPy_h_YlkHFUAdmvP/view?usp=sharing`;
     const authUrl = `${process.env.FRONTEND_BASE_URL}/reset_password/${token}`;
 
     return `<div style="max-width: 600px; margin: 20px auto; padding: 20px; background: linear-gradient(135deg, #ff9ba8, #6d76e8); box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); border-radius: 10px; font-family: 'Roboto', 'Arial', sans-serif; text-align: center; color: #fff;">
@@ -26,7 +26,7 @@ class EmailTemplate {
   }
 
   createSchoolTemplate(schoolName, token) {
-    const logoURL = `${process.env.BACKEND_BASE_URL}/images/logo.png`;
+    const logoURL = `https://drive.google.com/file/d/1A86Wlc1FsBzavIiDPy_h_YlkHFUAdmvP/view?usp=sharing`;
     const authUrl = `${process.env.FRONTEND_BASE_URL}/verify_school_email/${token}`;
 
     return `<!DOCTYPE html>
